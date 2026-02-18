@@ -1,35 +1,33 @@
 from flask import Flask, render_template_string, request, redirect, url_for
+import os
 
 app = Flask(__name__)
 
-# Notların tutulacağı liste (Şimdilik geçici, uygulama her restart olduğunda sıfırlanır)
-notes = []
+# Notları tutan liste
+notes = ["Azure üzerinde ilk notum!"]
 
 @app.route('/')
 def index():
-    # Basit bir HTML tasarımı
     html = '''
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Kankamın Not Defteri</title>
+        <title>Not Defteri</title>
         <style>
-            body { font-family: sans-serif; margin: 40px; background-color: #f4f4f4; }
-            .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-            input[type="text"] { padding: 10px; width: 70%; border: 1px solid #ddd; border-radius: 5px; }
-            button { padding: 10px 20px; background: #0078d4; color: white; border: none; border-radius: 5px; cursor: pointer; }
-            ul { list-style: none; padding: 0; }
-            li { background: #eee; margin: 5px 0; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
+            body { font-family: sans-serif; margin: 40px; background-color: #f0f2f5; text-align: center; }
+            .container { max-width: 500px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
+            input { padding: 12px; width: 60%; border: 1px solid #ddd; border-radius: 8px; }
+            button { padding: 12px 20px; background: #0084ff; color: white; border: none; border-radius: 8px; cursor: pointer; }
+            li { background: #fff; margin: 10px 0; padding: 10px; border-radius: 8px; border-left: 5px solid #0084ff; list-style: none; text-align: left; }
         </style>
     </head>
     <body>
         <div class="container">
             <h1>Not Defteri 📝</h1>
             <form action="/add" method="POST">
-                <input type="text" name="note" placeholder="Bir şeyler yaz..." required>
+                <input type="text" name="note" placeholder="Not yaz..." required>
                 <button type="submit">Ekle</button>
             </form>
-            <hr>
             <ul>
                 {% for note in notes %}
                     <li>{{ note }}</li>
@@ -41,7 +39,7 @@ def index():
     '''
     return render_template_string(html, notes=notes)
 
-@app.route('/add', method=['POST'])
+@app.route('/add', methods=['POST'])
 def add_note():
     note = request.form.get('note')
     if note:
@@ -49,4 +47,6 @@ def add_note():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run()
+    # Azure için portu dinamik alalım
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
