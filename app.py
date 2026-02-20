@@ -16,11 +16,10 @@ def get_db_connection():
         f"UID={os.getenv('DB_USER')};"
         f"PWD={os.getenv('DB_PASSWORD')};"
         "Encrypt=yes;"
-        "TrustServerCertificate=no;"
+        "TrustServerCertificate=yes;"
         "Connection Timeout=30;"
     )
     return pyodbc.connect(conn_str)
-
 
 @app.route('/')
 def index():
